@@ -1,0 +1,34 @@
+version: '3.7'
+services:
+
+  utilities:
+    container_name: crash_mapping_utilities
+    build: utilities
+    env_file:
+      - .env
+    command: "tail -f /dev/null"
+    volumes:
+      - ./utilities/utilities:/root/utilities
+      - ./utilities/tmp:/root/tmp
+      - ./utilities/diagram_data:/root/diagram_data
+      - ./utilities/CR3s_and_Spreadsheets:/root/CR3s_and_Spreadsheets
+
+  webserver:
+    container_name: crash_mapping_webserver
+    build: webserver
+    env_file:
+      - .env
+    command: "tail -f /dev/null"
+    volumes:
+      - ./webserver/app:/root/html
+      - ./webserver/cgi-bin:/usr/lib/cgi-bin
+      - ./webserver/apache_html:/var/www/html
+    ports:
+      # be careful to not expose these resources on the COA network
+      - 127.0.0.1:80:80
+      - 127.0.0.1:1234:1234
+      - 127.0.0.1:36298:36298
+
+volumes:
+  crash_mapping_postgres_pgdata:
+    name: crash_mapping_postgres_pgdata
